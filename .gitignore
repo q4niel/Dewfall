@@ -1,5 +1,6 @@
 *
 !.gitignore
 
+!bootstrap.sh
 !LICENSE
 !readme.md
