@@ -1,3 +1,9 @@
 *
 
 !LICENSE
+
+!env/src
+!env/src/**/*
+
+!src/
+!src/**/*

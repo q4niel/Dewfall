@@ -1,0 +1,10 @@
+[flags]
+shared = ["-std=c++23"]
+compile = []
+link = []
+
+[global]
+compile = [
+    "main.cxx",
+    "hello/hello.cxx"
+]
