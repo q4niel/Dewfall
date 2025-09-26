@@ -1,9 +1,10 @@
 *
 !.gitignore
 
-!env/
-!env/**/*
-
+!.dockerignore
 !.gitattributes
 !LICENSE
 !readme.md
+
+!env/
+!env/**/*
