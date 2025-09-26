@@ -1,0 +1,4 @@
+Dockerfile.* linguist-language=Dockerfile
+*.hxx linguist-language=C++
+*.cxx linguist-language=C++
+*.txx linguist-language=C++
