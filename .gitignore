@@ -1,6 +1,9 @@
 *
 !.gitignore
 
+!env/
+!env/**/*
+
 !.gitattributes
 !LICENSE
 !readme.md

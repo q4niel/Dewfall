@@ -1,0 +1,5 @@
+FROM archlinux:latest
+RUN pacman -Syu --noconfirm python3
+COPY . ./Dewfall
+WORKDIR Dewfall
+ENTRYPOINT ["python3"]
