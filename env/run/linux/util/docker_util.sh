@@ -23,6 +23,11 @@ copyDocker() {
     local dockerPath=$1
     local outPath=$2
 
+    # Delete $outPath if it exists locally
+    if [ -d "$outPath" ]; then
+        sudo rm -r "$outPath"
+    fi
+
     # Copy from container to local
     sudo docker cp "$container:/$dockerPath" "./$outPath"
 

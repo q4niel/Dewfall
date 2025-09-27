@@ -1,5 +1,6 @@
 FROM archlinux:latest
-RUN pacman -Syu --noconfirm python3 clang
+RUN pacman -Syu --noconfirm python3 python-pip clang
+RUN pip3 install --break-system-packages requests
 COPY . ./Dewfall
 WORKDIR Dewfall
 ENTRYPOINT ["python3"]
