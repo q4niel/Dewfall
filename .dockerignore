@@ -2,9 +2,6 @@
 
 !LICENSE
 
-!3rd/
-!3rd/config.toml
-
 !env/src
 !env/src/**/*
 

@@ -2,20 +2,20 @@ import tomllib
 from util import clang
 
 if __name__ == "__main__":
-    with open("src/config.toml", "rb") as file:
-        configData: dict = tomllib.load(file)
+    with open("src/build.toml", "rb") as file:
+        data: dict = tomllib.load(file)
 
     clang.init()
 
     shallLink: bool = True
-    for src in configData["global"]["compile"]:
+    for src in data["global"]["compile"]:
         if not clang.compile (
             f"src/{src}",
-            configData["flags"]["shared"] + configData["flags"]["compile"]
+            data["flags"]["shared"] + data["flags"]["compile"]
         ): shallLink = False
 
     print()
     clang.linkExec (
         "app",
-        configData["flags"]["shared"] + configData["flags"]["link"]
+        data["flags"]["shared"] + data["flags"]["link"]
     )

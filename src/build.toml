@@ -3,6 +3,10 @@ shared = ["-std=c++23"]
 compile = []
 link = []
 
+[libraries]
+system = []
+3rd = []
+
 [global]
 compile = [
     "main.cxx",

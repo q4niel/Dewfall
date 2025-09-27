@@ -12,12 +12,13 @@ def fetch(path: str, url: str) -> None:
         tar.extractall(path=f"3rd/{path}")
 
 if __name__ == "__main__":
+    os.mkdir("3rd")
     os.mkdir("3rd/raw")
 
-    with open("3rd/config.toml", "rb") as file:
-        configData: dict = tomllib.load(file)
+    with open("src/3rd.toml", "rb") as file:
+        data: dict = tomllib.load(file)
 
-    for lib in configData["libraries"]:
+    for lib in data["libraries"]:
         fetch(lib["path"], lib["url"])
 
     shutil.rmtree("3rd/raw")
