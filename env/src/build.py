@@ -11,7 +11,7 @@ def main() -> None:
     with open("src/build.toml", "rb") as file:
         data: dict = tomllib.load(file)
 
-    clang.init()
+    if not clang.init(): return
 
     for src in data["global"]["compile"]:
         if not clang.compile (
