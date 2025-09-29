@@ -1,4 +1,5 @@
 import os
+import shutil
 import subprocess
 from . import color
 
@@ -22,6 +23,9 @@ class Globals:
         Globals.buildPath = "build"
         Globals.binPath = f"{Globals.buildPath}/bin"
 
+        if os.path.exists(Globals.objectsPath):
+            shutil.rmtree(Globals.objectsPath)
+
         os.mkdir(Globals.objectsPath)
         os.mkdir(Globals.buildPath)
         os.mkdir(Globals.binPath)
@@ -36,12 +40,17 @@ def compile(src: str, flags: list[str] = []) -> bool:
         print(f"{color.makeRed("Error")}: source '{src}' is a directory?")
         return False
 
+    clangArgs: list[str] = [
+        "clang++",
+        *flags,
+        "-c",
+        src,
+        "-o",
+        f"{Globals.objectsPath}/{os.path.basename(src)[:-3]}o"
+    ]
+
     print(f"Compiling '{src}'...", end="")
-    callback: subprocess.CompletedProcess[str] = subprocess.run (
-        ["clang++", *flags, "-c", src, "-o", f"{Globals.objectsPath}/{os.path.basename(src)[:-3]}o"],
-        capture_output=True,
-        text=True
-    )
+    callback: subprocess.CompletedProcess[str] = subprocess.run(clangArgs, capture_output=True, text=True)
 
     if callback.returncode != 0:
         print(f" {color.makeRed("Failure")}")
@@ -56,12 +65,16 @@ def linkExec(binaryName: str, flags: list[str] = []) -> bool:
     for obj in os.listdir(Globals.objectsPath):
         objects.append(f"{Globals.objectsPath}/{obj}")
 
+    clangArgs: list[str] = [
+        "clang++",
+        *flags,
+        *objects,
+        "-o",
+        f"{Globals.buildPath}/{binaryName}{Globals.execExt}"
+    ]
+
     print(f"Linking into executable binary..", end="")
-    callback: subprocess.CompletedProcess[str] = subprocess.run (
-        ["clang++", *flags, *objects, "-o", f"{Globals.buildPath}/{binaryName}{Globals.execExt}"],
-        capture_output=True,
-        text=True
-    )
+    callback: subprocess.CompletedProcess[str] = subprocess.run(clangArgs, capture_output=True, text=True)
 
     if callback.returncode != 0:
         print(f" {color.makeRed("Failure")}")

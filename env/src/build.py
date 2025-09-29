@@ -11,10 +11,9 @@ def main() -> None:
     with open("src/build.toml", "rb") as file:
         data: dict = tomllib.load(file)
 
-    if not clang.init(): return
-
     for key, value in data["build"].items():
         print(color.makeMagenta(f"[ Building '{key}' ]\n"))
+        if not clang.init(): return
 
         for src in value["sources"]:
             if not clang.compile (
