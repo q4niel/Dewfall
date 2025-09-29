@@ -15,6 +15,8 @@ runDocker() {
     # Build image
     sudo docker build -f "$dockerfile" -t "$container:latest" .
 
+    clear
+
     # Run container
     sudo docker run --name "$container" "$container:latest" "$pyScript" "${pyArgs[@]}"
 }

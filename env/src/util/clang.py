@@ -15,7 +15,7 @@ class Globals:
             case "nt": Globals.execExt = ".exe"
             case "posix": Globals.execExt = ""
             case _:
-                print(f"{color.makeFailureRed("Error")}: unsupported OS")
+                print(f"{color.makeRed("Error")}: unsupported OS")
                 return False
 
         Globals.objectsPath = "objects"
@@ -29,11 +29,11 @@ class Globals:
 
 def compile(src: str, flags: list[str] = []) -> bool:
     if not os.path.exists(src):
-        print(f"{color.makeFailureRed("Error")}: source '{src}' does not exist!")
+        print(f"{color.makeRed("Error")}: source '{src}' does not exist!")
         return False
 
     if os.path.isdir(src):
-        print(f"{color.makeFailureRed("Error")}: source '{src}' is a directory?")
+        print(f"{color.makeRed("Error")}: source '{src}' is a directory?")
         return False
 
     print(f"Compiling '{src}'...", end="")
@@ -44,11 +44,11 @@ def compile(src: str, flags: list[str] = []) -> bool:
     )
 
     if callback.returncode != 0:
-        print(f" {color.makeFailureRed("Failure")}")
+        print(f" {color.makeRed("Failure")}")
         print(callback.stderr)
         return False
 
-    print(f" {color.makeSuccessGreen("Success")}")
+    print(f" {color.makeGreen("Success")}")
     return True
 
 def linkExec(binaryName: str, flags: list[str] = []) -> bool:
@@ -64,9 +64,9 @@ def linkExec(binaryName: str, flags: list[str] = []) -> bool:
     )
 
     if callback.returncode != 0:
-        print(f" {color.makeFailureRed("Failure")}")
+        print(f" {color.makeRed("Failure")}")
         print(callback.stderr)
         return False
 
-    print(f" {color.makeSuccessGreen("Success")}")
+    print(f" {color.makeGreen("Success")}")
     return True

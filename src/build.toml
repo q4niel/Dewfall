@@ -1,14 +1,30 @@
-[flags]
+# Global
+[global.flags]
 shared = ["-std=c++23"]
 compile = []
 link = []
 
-[libraries]
-system = []
-3rd = []
+[global.debugOnlyFlags]
+shared = []
+compile = []
+link = []
 
-[global]
-compile = [
+# Entry Build
+[build.entry.flags]
+shared = []
+compile = []
+link = []
+
+[build.entry.debugOnlyFlags]
+shared = []
+compile = []
+link = []
+
+[build.entry]
+binType = "executable"
+binName = "app"
+debugBinName = "app_d"
+sources = [
     "main.cxx",
     "hello/hello.cxx"
 ]
