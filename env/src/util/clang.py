@@ -25,7 +25,7 @@ class Globals:
         os.mkdir(Globals.objectsPath)
         return True
 
-def compile(src: str, flags: list[str] = []) -> bool:
+def compile(src: str, flags: list[str] = None) -> bool:
     if not os.path.exists(src):
         print(f"{color.makeRed("Error")}: source '{src}' does not exist!")
         return False
@@ -54,7 +54,7 @@ def compile(src: str, flags: list[str] = []) -> bool:
     print(f" {color.makeGreen("Success")}")
     return True
 
-def linkExec(binaryDirectory: str, binaryName: str, flags: list[str] = []) -> bool:
+def linkExec(binaryDirectory: str, binaryName: str, flags: list[str] = None) -> bool:
     print(f"Linking into executable binary..", end="")
 
     if not os.path.exists(binaryDirectory):
