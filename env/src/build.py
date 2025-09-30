@@ -11,6 +11,11 @@ def main() -> None:
     with open("src/build.toml", "rb") as file:
         data: dict = tomllib.load(file)
 
+    buildDir: str = "build"
+    os.mkdir(buildDir)
+    for dir in data["global"]["createDirectories"]:
+        os.mkdir(f"{buildDir}/{dir}")
+
     for key, value in data["build"].items():
         print(color.makeMagenta(f"[ Building '{key}' ]\n"))
         if not clang.init(): return
@@ -28,6 +33,7 @@ def main() -> None:
         match value["binType"]:
             case "executable":
                 clang.linkExec (
+                        f"{buildDir}/{value["binDir"]}",
                     value["binName"],
                     data["global"]["flags"]["shared"] +
                     data["global"]["flags"]["link"] +

@@ -1,4 +1,9 @@
 # Global
+[global]
+createDirectories = [
+    "bin"
+]
+
 [global.flags]
 shared = ["-std=c++23"]
 compile = []
@@ -22,6 +27,7 @@ link = []
 
 [build.entry]
 binType = "executable"
+binDir = "bin"
 binName = "app"
 debugBinName = "app_d"
 sources = [

@@ -7,8 +7,6 @@ def init() -> bool: return Globals.init()
 class Globals:
     execExt: str
     objectsPath: str
-    buildPath: str
-    binPath: str
 
     @staticmethod
     def init() -> bool:
@@ -20,15 +18,11 @@ class Globals:
                 return False
 
         Globals.objectsPath = "objects"
-        Globals.buildPath = "build"
-        Globals.binPath = f"{Globals.buildPath}/bin"
 
         if os.path.exists(Globals.objectsPath):
             shutil.rmtree(Globals.objectsPath)
 
         os.mkdir(Globals.objectsPath)
-        os.mkdir(Globals.buildPath)
-        os.mkdir(Globals.binPath)
         return True
 
 def compile(src: str, flags: list[str] = []) -> bool:
@@ -60,7 +54,13 @@ def compile(src: str, flags: list[str] = []) -> bool:
     print(f" {color.makeGreen("Success")}")
     return True
 
-def linkExec(binaryName: str, flags: list[str] = []) -> bool:
+def linkExec(binaryDirectory: str, binaryName: str, flags: list[str] = []) -> bool:
+    print(f"Linking into executable binary..", end="")
+
+    if not os.path.exists(binaryDirectory):
+        print(f" {color.makeRed("Failure")}: output directory '{binaryDirectory}' does not exist?")
+        return False
+
     objects: list[str] = []
     for obj in os.listdir(Globals.objectsPath):
         objects.append(f"{Globals.objectsPath}/{obj}")
@@ -70,10 +70,9 @@ def linkExec(binaryName: str, flags: list[str] = []) -> bool:
         *flags,
         *objects,
         "-o",
-        f"{Globals.buildPath}/{binaryName}{Globals.execExt}"
+        f"{binaryDirectory}/{binaryName}{Globals.execExt}"
     ]
 
-    print(f"Linking into executable binary..", end="")
     callback: subprocess.CompletedProcess[str] = subprocess.run(clangArgs, capture_output=True, text=True)
 
     if callback.returncode != 0:
