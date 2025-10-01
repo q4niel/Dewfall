@@ -25,10 +25,22 @@ class Platform:
             case Platform.Enumeration.WINDOWS: return "windows"
 
     @staticmethod
-    def getBinaryFileExtension() -> str: #type: ignore[return]
+    def getExecutableBinaryExtension() -> str: #type: ignore[return]
         match Platform.enum:
             case Platform.Enumeration.LINUX: return ""
             case Platform.Enumeration.WINDOWS: return ".exe"
+
+    @staticmethod
+    def getDynamicBinaryExtension() -> str: #type: ignore[return]
+        match Platform.enum:
+            case Platform.Enumeration.LINUX: return ".so"
+            case Platform.Enumeration.WINDOWS: return ".dll"
+
+    @staticmethod
+    def getStaticBinaryExtension() -> str: #type: ignore[return]
+        match Platform.enum:
+            case Platform.Enumeration.LINUX: return ".a"
+            case Platform.Enumeration.WINDOWS: return ".lib"
 
 if __name__ != "__main__":
     if not Platform.init():

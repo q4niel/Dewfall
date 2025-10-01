@@ -36,17 +36,24 @@ def main() -> None:
             ): return
 
         print()
+        binType: clang.BinaryType
         match value["binType"]:
-            case "executable":
-                clang.linkExec (
-                        f"{buildDir}/{value["binDir"]}",
-                    value["binName"],
-                    data["global"]["flags"]["shared"] +
-                    data["global"]["flags"]["link"] +
-                    value["flags"]["shared"] +
-                    value["flags"]["link"]
-                )
-            case "dynamic": pass
+            case "executable": binType = clang.BinaryType.EXECUTABLE
+            case "dynamic": binType = clang.BinaryType.DYNAMIC
+            case "static": binType = clang.BinaryType.STATIC
+            case _:
+                print(f"{color.makeRed("Error")}: binType '{value["binType"]}' is invalid")
+                return
+
+        clang.linkBinary (
+            f"{buildDir}/{value["binDir"]}",
+            value["binName"],
+            binType,
+            data["global"]["flags"]["shared"] +
+            data["global"]["flags"]["link"] +
+            value["flags"]["shared"] +
+            value["flags"]["link"]
+        )
 
     return
 

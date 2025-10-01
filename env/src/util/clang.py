@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+from enum import Enum
 from . import color
 from .platform import Platform
 
@@ -18,6 +19,11 @@ class Globals:
         os.mkdir(Globals.objectsPath)
         return True
 
+class BinaryType(Enum):
+    EXECUTABLE = 1
+    DYNAMIC = 2
+    STATIC = 3
+
 def compile(src: str, flags: list[str] = None) -> bool:
     if not os.path.exists(src):
         print(f"{color.makeRed("Error")}: source '{src}' does not exist!")
@@ -27,7 +33,7 @@ def compile(src: str, flags: list[str] = None) -> bool:
         print(f"{color.makeRed("Error")}: source '{src}' is a directory?")
         return False
 
-    clangArgs: list[str] = [
+    procArgs: list[str] = [
         "clang++",
         *flags,
         "-c",
@@ -37,7 +43,7 @@ def compile(src: str, flags: list[str] = None) -> bool:
     ]
 
     print(f"Compiling '{src}'...", end="")
-    callback: subprocess.CompletedProcess[str] = subprocess.run(clangArgs, capture_output=True, text=True)
+    callback: subprocess.CompletedProcess[str] = subprocess.run(procArgs, capture_output=True, text=True)
 
     if callback.returncode != 0:
         print(f" {color.makeRed("Failure")}")
@@ -47,8 +53,21 @@ def compile(src: str, flags: list[str] = None) -> bool:
     print(f" {color.makeGreen("Success")}")
     return True
 
-def linkExec(binaryDirectory: str, binaryName: str, flags: list[str] = None) -> bool:
-    print(f"Linking into executable binary..", end="")
+def linkBinary(binaryDirectory: str, binaryName: str, binaryType: BinaryType, flags: list[str] = None) -> bool:
+    binExt: str = ""
+    taskTypeMsg: str = ""
+    match binaryType:
+        case BinaryType.EXECUTABLE:
+            binExt = Platform.getExecutableBinaryExtension()
+            taskTypeMsg = "executable"
+        case BinaryType.DYNAMIC:
+            binExt = Platform.getDynamicBinaryExtension()
+            taskTypeMsg = "dynamic"
+        case BinaryType.STATIC:
+            binExt = Platform.getStaticBinaryExtension()
+            taskTypeMsg = "static"
+
+    print(f"Linking into {taskTypeMsg} binary..", end="")
 
     if not os.path.exists(binaryDirectory):
         print(f" {color.makeRed("Failure")}: output directory '{binaryDirectory}' does not exist?")
@@ -58,15 +77,15 @@ def linkExec(binaryDirectory: str, binaryName: str, flags: list[str] = None) -> 
     for obj in os.listdir(Globals.objectsPath):
         objects.append(f"{Globals.objectsPath}/{obj}")
 
-    clangArgs: list[str] = [
+    procArgs: list[str] = [
         "clang++",
         *flags,
         *objects,
         "-o",
-        f"{binaryDirectory}/{binaryName}{Platform.getBinaryFileExtension()}"
+        f"{binaryDirectory}/{binaryName}{binExt}"
     ]
 
-    callback: subprocess.CompletedProcess[str] = subprocess.run(clangArgs, capture_output=True, text=True)
+    callback: subprocess.CompletedProcess[str] = subprocess.run(procArgs, capture_output=True, text=True)
 
     if callback.returncode != 0:
         print(f" {color.makeRed("Failure")}")
