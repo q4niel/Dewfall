@@ -15,10 +15,10 @@ if __name__ == "__main__":
     os.mkdir("3rd")
     os.mkdir("3rd/raw")
 
-    with open("src/3rd.toml", "rb") as file:
+    with open("src/build.toml", "rb") as file:
         data: dict = tomllib.load(file)
 
-    for lib in data["libraries"]:
+    for lib in data["global"]["fetchLibraries"]:
         fetch(lib["path"], lib["url"])
 
     shutil.rmtree("3rd/raw")
