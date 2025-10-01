@@ -2,21 +2,14 @@ import os
 import shutil
 import subprocess
 from . import color
+from .platform import Platform
 
 def init() -> bool: return Globals.init()
 class Globals:
-    execExt: str
     objectsPath: str
 
     @staticmethod
     def init() -> bool:
-        match os.name:
-            case "nt": Globals.execExt = ".exe"
-            case "posix": Globals.execExt = ""
-            case _:
-                print(f"{color.makeRed("Error")}: unsupported OS")
-                return False
-
         Globals.objectsPath = "objects"
 
         if os.path.exists(Globals.objectsPath):
@@ -70,7 +63,7 @@ def linkExec(binaryDirectory: str, binaryName: str, flags: list[str] = None) -> 
         *flags,
         *objects,
         "-o",
-        f"{binaryDirectory}/{binaryName}{Globals.execExt}"
+        f"{binaryDirectory}/{binaryName}{Platform.getBinaryFileExtension()}"
     ]
 
     callback: subprocess.CompletedProcess[str] = subprocess.run(clangArgs, capture_output=True, text=True)

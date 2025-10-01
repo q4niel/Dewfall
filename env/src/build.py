@@ -6,12 +6,6 @@ from util import color
 from util.platform import Platform
 
 def main() -> None:
-    platform: Platform = Platform()
-
-    if not platform.isValid():
-        print(f"{color.makeRed("Error")}: unsupported OS")
-        return
-
     if not os.path.exists("3rd"):
         print(f"{color.makeRed("Error")}: 3rd party libraries have not been installed")
         return
@@ -25,7 +19,7 @@ def main() -> None:
     for dir in data["global"]["createDirectories"]:
         os.mkdir(f"{buildDir}/{dir}")
 
-    for src in data["global"]["copySources"][f"{platform.getString()}"]:
+    for src in data["global"]["copySources"][f"{Platform.getString()}"]:
         shutil.copy(src["from"], f"{buildDir}/{src["to"]}")
 
     for key, value in data["build"].items():
