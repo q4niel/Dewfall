@@ -14,10 +14,11 @@ def main() -> None:
         data: dict = tomllib.load(file)
 
     buildDir: str = "build"
+    binDir: str = f"{buildDir}/bin"
+    licDir: str = f"{buildDir}/lic"
     os.mkdir(buildDir)
-
-    for dir in data["global"]["createDirectories"]:
-        os.mkdir(f"{buildDir}/{dir}")
+    os.mkdir(binDir)
+    os.mkdir(licDir)
 
     for src in data["global"]["copySources"][f"{Platform.getString()}"]:
         shutil.copy(src["from"], f"{buildDir}/{src["to"]}")
@@ -46,13 +47,14 @@ def main() -> None:
                 return
 
         clang.linkBinary (
-            f"{buildDir}/{value["binDir"]}",
+            binDir,
             value["binName"],
             binType,
             data["global"]["flags"]["shared"] +
             data["global"]["flags"]["link"] +
             value["flags"]["shared"] +
-            value["flags"]["link"]
+            value["flags"]["link"],
+            value["dynamicLibraries"]
         )
 
     return

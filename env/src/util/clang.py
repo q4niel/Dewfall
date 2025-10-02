@@ -35,11 +35,11 @@ def compile(src: str, flags: list[str] = None) -> bool:
 
     procArgs: list[str] = [
         "clang++",
-        *flags,
         "-c",
         src,
         "-o",
-        f"{Globals.objectsPath}/{os.path.basename(src)[:-3]}o"
+        f"{Globals.objectsPath}/{os.path.basename(src)[:-3]}o",
+        *flags,
     ]
 
     print(f"Compiling '{src}'...", end="")
@@ -53,7 +53,14 @@ def compile(src: str, flags: list[str] = None) -> bool:
     print(f" {color.makeGreen("Success")}")
     return True
 
-def linkBinary(binaryDirectory: str, binaryName: str, binaryType: BinaryType, flags: list[str] = None) -> bool:
+def linkBinary (
+        binaryDirectory: str,
+        binaryName: str,
+        binaryType: BinaryType,
+        flags: list[str] = None,
+        dynamicLibraries: dict = None,
+        staticLibraries: dict = None
+) -> bool:
     binExt: str = ""
     taskTypeMsg: str = ""
     match binaryType:
@@ -73,16 +80,22 @@ def linkBinary(binaryDirectory: str, binaryName: str, binaryType: BinaryType, fl
         print(f" {color.makeRed("Failure")}: output directory '{binaryDirectory}' does not exist?")
         return False
 
+    dynamics: list[str] = []
+    if not dynamicLibraries == None:
+        dynamics = ["-l:" + bin for bin in dynamicLibraries[Platform.getString()]]
+
     objects: list[str] = []
     for obj in os.listdir(Globals.objectsPath):
         objects.append(f"{Globals.objectsPath}/{obj}")
 
     procArgs: list[str] = [
         "clang++",
-        *flags,
+        f"-L{binaryDirectory}",
+        *dynamics,
         *objects,
         "-o",
-        f"{binaryDirectory}/{binaryName}{binExt}"
+        f"{binaryDirectory}/{binaryName}{binExt}",
+        *flags,
     ]
 
     callback: subprocess.CompletedProcess[str] = subprocess.run(procArgs, capture_output=True, text=True)

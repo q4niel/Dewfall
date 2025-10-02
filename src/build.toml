@@ -1,10 +1,4 @@
 # Global
-[global]
-createDirectories = [
-    "bin",
-    "lic"
-]
-
 [global.3rdLibraries]
 linux = [
     {name = "raylib", url = "https://github.com/raysan5/raylib/releases/download/5.5/raylib-5.5_linux_amd64.tar.gz"}
@@ -13,8 +7,8 @@ windows = []
 
 [global.copySources]
 linux = [
-    {from = "3rd/raylib/lib/libraylib.so", to = "bin"},
-    {from = "3rd/raylib/LICENSE", to = "lic/libraylib.so.LICENSE"}
+    {from = "3rd/raylib/lib/libraylib.so.550", to = "bin"},
+    {from = "3rd/raylib/LICENSE", to = "lic/libraylib.so.550.LICENSE"}
 ]
 windows = []
 
@@ -39,12 +33,16 @@ shared = []
 compile = []
 link = []
 
+[build.entry.dynamicLibraries]
+linux = [
+    "libraylib.so.550"
+]
+windows = []
+
 [build.entry]
 binType = "executable"
-binDir = "bin"
 binName = "app"
 debugBinName = "app_d"
 sources = [
-    "main.cxx",
-    "hello/hello.cxx"
+    "main.cxx"
 ]
