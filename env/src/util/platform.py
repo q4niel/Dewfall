@@ -2,6 +2,7 @@ import os
 import sys
 from enum import Enum
 from . import color
+from .binary_type import BinaryType
 
 class Platform:
     class Enumeration(Enum):
@@ -41,6 +42,20 @@ class Platform:
         match Platform.enum:
             case Platform.Enumeration.LINUX: return ".a"
             case Platform.Enumeration.WINDOWS: return ".lib"
+
+    @staticmethod
+    def getBinaryExtension(binaryType: BinaryType) -> str: #type: ignore[return]
+        match binaryType:
+            case BinaryType.EXECUTABLE: return Platform.getExecutableBinaryExtension()
+            case BinaryType.DYNAMIC: return Platform.getDynamicBinaryExtension()
+            case BinaryType.STATIC: return Platform.getStaticBinaryExtension()
+
+    @staticmethod
+    def getBinaryExtensionString(binaryType: BinaryType) -> str: #type: ignore[return]
+        match binaryType:
+            case BinaryType.EXECUTABLE: return "executable"
+            case BinaryType.DYNAMIC: return "dynamic"
+            case BinaryType.STATIC: return "static"
 
 if __name__ != "__main__":
     if not Platform.init():

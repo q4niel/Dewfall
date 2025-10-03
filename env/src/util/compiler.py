@@ -1,7 +1,7 @@
 import os
 import shutil
 import subprocess
-from enum import Enum
+from .binary_type import BinaryType
 from . import color
 from .platform import Platform
 
@@ -18,11 +18,6 @@ class Globals:
 
         os.mkdir(Globals.objectsPath)
         return True
-
-class BinaryType(Enum):
-    EXECUTABLE = 1
-    DYNAMIC = 2
-    STATIC = 3
 
 def compile(src: str, flags: list[str] = None) -> bool:
     if not os.path.exists(src):
@@ -53,6 +48,44 @@ def compile(src: str, flags: list[str] = None) -> bool:
     print(f" {color.makeGreen("Success")}")
     return True
 
+def _makeLibList(libs: dict) -> list[str]:
+    if libs == None: return []
+    return ["-l:" + lib for lib in libs[Platform.getString()]]
+
+def _execArgs (
+        binaryDirectory: str,
+        dynamicLibraries: dict,
+        staticLibraries: dict,
+        objectFiles: list[str],
+        binName: str,
+        flags: list[str]
+) -> list[str]: return [
+    "clang++",
+    f"-L{binaryDirectory}",
+    *_makeLibList(dynamicLibraries),
+    *_makeLibList(staticLibraries),
+    *objectFiles,
+    "-o",
+    f"{binaryDirectory}/{binName}{Platform.getExecutableBinaryExtension()}",
+    *flags
+]
+
+def _dynamicArgs (
+    binaryDirectory: str,
+    staticLibraries: dict,
+    objectFiles: list[str],
+    binName: str,
+    flags: list[str]
+) -> list[str]: return []
+
+def _staticArgs (
+    binaryDirectory: str,
+    staticLibraries: dict,
+    objectFiles: list[str],
+    binName: str,
+    flags: list[str]
+) -> list[str]: return []
+
 def linkBinary (
         binaryDirectory: str,
         binaryName: str,
@@ -61,42 +94,24 @@ def linkBinary (
         dynamicLibraries: dict = None,
         staticLibraries: dict = None
 ) -> bool:
-    binExt: str = ""
-    taskTypeMsg: str = ""
-    match binaryType:
-        case BinaryType.EXECUTABLE:
-            binExt = Platform.getExecutableBinaryExtension()
-            taskTypeMsg = "executable"
-        case BinaryType.DYNAMIC:
-            binExt = Platform.getDynamicBinaryExtension()
-            taskTypeMsg = "dynamic"
-        case BinaryType.STATIC:
-            binExt = Platform.getStaticBinaryExtension()
-            taskTypeMsg = "static"
-
-    print(f"Linking into {taskTypeMsg} binary..", end="")
+    print(f"Linking into {Platform.getBinaryExtensionString(binaryType)} binary..", end="")
 
     if not os.path.exists(binaryDirectory):
         print(f" {color.makeRed("Failure")}: output directory '{binaryDirectory}' does not exist?")
         return False
 
-    dynamics: list[str] = []
-    if not dynamicLibraries == None:
-        dynamics = ["-l:" + bin for bin in dynamicLibraries[Platform.getString()]]
-
     objects: list[str] = []
     for obj in os.listdir(Globals.objectsPath):
         objects.append(f"{Globals.objectsPath}/{obj}")
 
-    procArgs: list[str] = [
-        "clang++",
-        f"-L{binaryDirectory}",
-        *dynamics,
-        *objects,
-        "-o",
-        f"{binaryDirectory}/{binaryName}{binExt}",
-        *flags,
-    ]
+    procArgs = _execArgs (
+        binaryDirectory,
+        dynamicLibraries,
+        staticLibraries,
+        objects,
+        binaryName,
+        flags
+    )
 
     callback: subprocess.CompletedProcess[str] = subprocess.run(procArgs, capture_output=True, text=True)
 

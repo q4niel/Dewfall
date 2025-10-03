@@ -1,9 +1,10 @@
 import os
 import shutil
 import tomllib
-from util import clang
+from util import compiler
 from util import color
 from util.platform import Platform
+from util.binary_type import BinaryType
 
 def main() -> None:
     if not os.path.exists("3rd"):
@@ -25,10 +26,10 @@ def main() -> None:
 
     for key, value in data["build"].items():
         print(color.makeMagenta(f"[ Building '{key}' ]\n"))
-        if not clang.init(): return
+        if not compiler.init(): return
 
         for src in value["sources"]:
-            if not clang.compile (
+            if not compiler.compile (
                 f"src/{src}",
                 data["global"]["flags"]["shared"] +
                 data["global"]["flags"]["compile"] +
@@ -37,16 +38,16 @@ def main() -> None:
             ): return
 
         print()
-        binType: clang.BinaryType
+        binType: BinaryType
         match value["binType"]:
-            case "executable": binType = clang.BinaryType.EXECUTABLE
-            case "dynamic": binType = clang.BinaryType.DYNAMIC
-            case "static": binType = clang.BinaryType.STATIC
+            case "executable": binType = BinaryType.EXECUTABLE
+            case "dynamic": binType = BinaryType.DYNAMIC
+            case "static": binType = BinaryType.STATIC
             case _:
                 print(f"{color.makeRed("Error")}: binType '{value["binType"]}' is invalid")
                 return
 
-        clang.linkBinary (
+        compiler.linkBinary (
             binDir,
             value["binName"],
             binType,
